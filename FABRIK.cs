@@ -7,8 +7,10 @@ using UnityEngine;
 
 public class FABRIKCLEAN : MonoBehaviour
 {
+    //number of segments
+    public int numSegments;
     //lengths of segments
-    public float[] lengths;
+    float[] lengths;
     //the transform of the goal of the IK
     public Transform goalT;
     Vector3 goal;
@@ -23,9 +25,23 @@ public class FABRIKCLEAN : MonoBehaviour
     Vector3[] nextPositions;
     // Start is called before the first frame update
     void Start()
-    {
+    { 
+        LengthsCalculation();
         prevPositions = new Vector3[lengths.Length + 1];
         nextPositions = new Vector3[lengths.Length + 1];
+    }
+
+    void LengthsCalculation()
+    {
+        lengths = new float[numSegments];
+        Transform node = root;
+        //iterate through the bones and calculate the lengths
+        for(int i=0; i<numSegments; i++)
+        {
+            lengths[i] = Vector3.Distance(node.position, node.GetChild(0).position);
+            print(lengths[i]);
+            node = node.GetChild(0);
+        }
     }
 
     //a function which will give us a point length away from p1 in the direction of p1 to p2
@@ -104,7 +120,7 @@ public class FABRIKCLEAN : MonoBehaviour
     //a method which takes a direction vector and turns it into x and y euler angles
     Quaternion GetAngleFromDirection(Vector3 a)
     {
-        return Quaternion.Euler(Mathf.Atan2(Mathf.Sqrt(a.x*a.x + a.z*a.z), a.y), Mathf.Atan2(a.x, a.z) / (2 * Mathf.PI) * 360, 0);
+        return Quaternion.Euler(Mathf.Atan2(Mathf.Sqrt(a.x*a.x + a.z*a.z), a.y) / (2 * Mathf.PI) * 360, Mathf.Atan2(a.x, a.z) / (2 * Mathf.PI) * 360, 0);
     }
 
     //position the segments
